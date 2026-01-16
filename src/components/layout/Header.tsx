@@ -3,13 +3,17 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingBag, Search } from "lucide-react";
+import { Menu, X, ShoppingBag, Search, Heart } from "lucide-react";
 import { SearchModal } from "@/components/ui/SearchModal";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { cartCount, setCartOpen } = useCart();
+  const { wishlistCount } = useWishlist();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,16 +61,31 @@ export function Header() {
 
           {/* Action Icons */}
           <div className="flex items-center gap-6">
+            <Link href="/wishlist" className="text-white hover:text-orange-500 transition-colors relative">
+              <Heart className="w-5 h-5" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
             <button
               onClick={() => setIsSearchOpen(true)}
               className="text-white hover:text-orange-500 transition-colors"
             >
               <Search className="w-5 h-5" />
             </button>
-            <Link href="/products" className="text-white hover:text-orange-500 transition-colors hidden sm:block relative">
+            <button 
+              onClick={() => setCartOpen(true)}
+              className="text-white hover:text-orange-500 transition-colors relative"
+            >
               <ShoppingBag className="w-5 h-5" />
-              {/* Optional: Add badge here if needed */}
-            </Link>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </button>
 
             {/* Mobile Menu Toggle */}
             <button

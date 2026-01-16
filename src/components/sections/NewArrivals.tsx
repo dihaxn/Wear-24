@@ -13,9 +13,9 @@ export function NewArrivals() {
   const displayProducts = products.slice(0, 3);
 
   return (
-    <section id="new-arrivals" className="min-h-screen w-full flex flex-col justify-center px-6 md:px-20 py-20 bg-black border-t border-white/10">
+    <section id="new-arrivals" className="min-h-screen w-full flex flex-col justify-center px-6 md:px-20 py-20 bg-black border-t border-white/10 scroll-mt-20 snap-start">
       <div className="max-w-7xl mx-auto w-full">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
@@ -27,7 +27,7 @@ export function NewArrivals() {
               animate={isInView ? { width: "3rem" } : { width: 0 }}
               className="block h-[2px] bg-orange-500 mb-4"
             />
-            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter">
+            <h2 className="text-3xl md:text-6xl font-black text-white tracking-tighter">
               NEW ARRIVALS
             </h2>
             <p className="text-gray-400 mt-2 tracking-wide">

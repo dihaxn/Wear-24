@@ -5,6 +5,9 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { PageLoader } from "@/components/layout/PageLoader";
+import { CartProvider } from "@/context/CartContext";
+import { WishlistProvider } from "@/context/WishlistContext";
+import { CartDrawer } from "@/components/cart/CartDrawer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,12 +25,17 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.className} min-h-screen bg-black text-white`}>
-        <PageLoader />
-        <Header />
-        <PageTransition>
-          {children}
-        </PageTransition>
-        <Footer />
+        <CartProvider>
+          <WishlistProvider>
+            <PageLoader />
+            <CartDrawer />
+            <Header />
+            <PageTransition>
+              {children}
+            </PageTransition>
+            <Footer />
+          </WishlistProvider>
+        </CartProvider>
       </body>
     </html>
   );

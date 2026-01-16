@@ -4,17 +4,44 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { SlidersHorizontal, X } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { products, categories } from "@/lib/data";
+import { useWishlist } from "@/context/WishlistContext";
 
 export default function ProductsPage() {
+  const searchParams = useSearchParams();
+  const filterParam = searchParams.get("filter");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const filteredProducts =
+  useEffect(() => {
+    if (filterParam === "new") {
+      // Logic for new arrivals could go here, for now we can just show All
+      setSelectedCategory("All");
+    } else if (filterParam === "bestseller") {
+      // Logic for bestsellers
+      setSelectedCategory("All"); 
+    } else if (filterParam === "sale") {
+       // Logic for sale
+       setSelectedCategory("All");
+    }
+  }, [filterParam]);
+
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const { isInWishlist } = useWishlist();
+
+  const filteredProducts = (
     selectedCategory === "All"
       ? products
-      : products.filter((p) => p.category === selectedCategory);
+      : products.filter((p) => p.category === selectedCategory)
+  ).sort((a, b) => {
+    const aInWishlist = isInWishlist(a.id);
+    const bInWishlist = isInWishlist(b.id);
+    if (aInWishlist && !bInWishlist) return -1;
+    if (!aInWishlist && bInWishlist) return 1;
+    return 0;
+  });
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -45,7 +72,10 @@ export default function ProductsPage() {
                   className="h-[2px] bg-orange-500 mb-4"
                 />
                 <h1 className="text-4xl md:text-6xl font-black tracking-tighter">
-                  ALL PRODUCTS
+                  {filterParam === "new" ? "NEW ARRIVALS" : 
+                   filterParam === "bestseller" ? "BESTSELLERS" :
+                   filterParam === "sale" ? "SALE" :
+                   "ALL PRODUCTS"}
                 </h1>
               </div>
 

@@ -4,13 +4,19 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingBag, Heart } from "lucide-react";
-import type { Product } from "@/lib/data";
+import type { Product } from "@/types";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const isWishlisted = isInWishlist(product.id);
+
   return (
     <motion.div
       whileHover={{ y: -8 }}
@@ -35,6 +41,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
+              onClick={() => addToCart(product)}
               className="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
             >
               <ShoppingBag className="w-5 h-5" />
@@ -42,9 +49,14 @@ export function ProductCard({ product }: ProductCardProps) {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="w-12 h-12 bg-white/10 backdrop-blur-sm text-white rounded-full flex items-center justify-center hover:bg-white/20 transition-colors border border-white/20"
+              onClick={() => toggleWishlist(product)}
+              className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors border ${
+                isWishlisted
+                  ? "bg-red-500 border-red-500 text-white"
+                  : "bg-white/10 backdrop-blur-sm text-white border-white/20 hover:bg-white/20"
+              }`}
             >
-              <Heart className="w-5 h-5" />
+              <Heart className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`} />
             </motion.button>
           </div>
         </motion.div>

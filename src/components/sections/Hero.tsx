@@ -7,7 +7,7 @@ import Image from "next/image";
 export function Hero() {
 
   return (
-    <section className="h-screen w-full relative overflow-hidden bg-black">
+    <section className="h-screen w-full relative overflow-hidden bg-black snap-start">
       {/* Main Hero Image */}
       <div className="absolute inset-0">
         <Image

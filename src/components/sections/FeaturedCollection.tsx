@@ -19,7 +19,7 @@ export function FeaturedCollection() {
     <section
       id="editorial"
       ref={ref}
-      className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#1a1a1a]"
+      className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#1a1a1a] scroll-mt-20 snap-start"
     >
       {/* Background with Parallax */}
       <motion.div

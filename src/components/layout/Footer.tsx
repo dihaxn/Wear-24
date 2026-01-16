@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Instagram, Twitter, Facebook, Youtube, ArrowUpRight } from "lucide-react";
+import { Instagram, Facebook, Youtube, ArrowUpRight, Check, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 const footerLinks = {
   shop: [
@@ -26,14 +27,39 @@ const footerLinks = {
 
 const socialLinks = [
   { icon: Instagram, href: "https://instagram.com" },
-  { icon: Twitter, href: "https://twitter.com" },
   { icon: Facebook, href: "https://facebook.com" },
   { icon: Youtube, href: "https://youtube.com" },
 ];
 
 export function Footer() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      setStatus("success");
+      setEmail("");
+      setTimeout(() => setStatus("idle"), 3000);
+    } catch (error) {
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 3000);
+    }
+  };
+
   return (
-    <footer className="bg-[#1a1a1a] text-white">
+    <footer className="bg-[#1a1a1a] text-white snap-start">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand Section */}
@@ -54,20 +80,36 @@ export function Footer() {
             </p>
             
             {/* Newsletter */}
-            <div className="flex gap-2">
+            <form onSubmit={handleSubscribe} className="flex gap-2">
               <input
                 type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 bg-white/10 border border-white/10 text-white placeholder:text-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={status === "error" ? "Please try again" : "Enter your email"}
+                disabled={status === "loading" || status === "success"}
+                className={`flex-1 px-4 py-3 bg-white/10 border ${
+                  status === "error" ? "border-red-500" : "border-white/10"
+                } text-white placeholder:text-gray-500 focus:outline-none focus:border-orange-500 transition-colors disabled:opacity-50`}
               />
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 bg-orange-500 text-white font-semibold hover:bg-orange-600 transition-colors"
+                disabled={status === "loading" || status === "success"}
+                className={`px-6 py-3 font-semibold transition-colors flex items-center justify-center min-w-[60px] ${
+                  status === "success" 
+                    ? "bg-green-500 hover:bg-green-600" 
+                    : "bg-orange-500 hover:bg-orange-600"
+                } text-white`}
               >
-                <ArrowUpRight className="w-5 h-5" />
+                {status === "loading" ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : status === "success" ? (
+                  <Check className="w-5 h-5" />
+                ) : (
+                  <ArrowUpRight className="w-5 h-5" />
+                )}
               </motion.button>
-            </div>
+            </form>
           </motion.div>
 
           {/* Shop Links */}
@@ -134,30 +176,30 @@ export function Footer() {
                 </li>
               ))}
             </ul>
+            
+            {/* Social Icons - aligned with Company column */}
+            <div className="flex items-center gap-4 mt-6">
+              {socialLinks.map((social, index) => (
+                <motion.a
+                  key={index}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.2, y: -2 }}
+                  className="text-gray-400 hover:text-orange-500 transition-colors"
+                >
+                  <social.icon className="w-5 h-5" />
+                </motion.a>
+              ))}
+            </div>
           </motion.div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-white/10 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="border-t border-white/10 mt-16 pt-8 flex justify-center items-center">
           <p className="text-gray-500 text-sm">
             © {new Date().getFullYear()} WEAR24. All rights reserved.
           </p>
-          
-          {/* Social Icons */}
-          <div className="flex items-center gap-4">
-            {socialLinks.map((social, index) => (
-              <motion.a
-                key={index}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.2, y: -2 }}
-                className="text-gray-400 hover:text-orange-500 transition-colors"
-              >
-                <social.icon className="w-5 h-5" />
-              </motion.a>
-            ))}
-          </div>
         </div>
       </div>
     </footer>
