@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { SlidersHorizontal, X } from "lucide-react";
@@ -10,7 +10,7 @@ import { ProductCard } from "@/components/ui/ProductCard";
 import { products, categories } from "@/lib/data";
 import { useWishlist } from "@/context/WishlistContext";
 
-export default function ProductsPage() {
+function ProductsContent() {
   const searchParams = useSearchParams();
   const filterParam = searchParams.get("filter");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -221,3 +221,12 @@ export default function ProductsPage() {
     </div>
   );
 }
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black" />}>
+      <ProductsContent />
+    </Suspense>
+  );
+}
+
